@@ -2,7 +2,7 @@
 layout: post
 category: "mysql"
 title: "mysql对emoji的支持"
-tags: ["mysql"]
+tags: ["linux","mysql"]
 ---
 
 ###步骤：
