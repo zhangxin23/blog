@@ -12,7 +12,7 @@ paginate_path: "page:num"
 # presonal config
 domain: 
 title: ZhangXin's Blog
-description: Java, C, C++, Linux, MySQL, Backend
+description: Java, C, C++, Linux, MySQL, Backend ...
 email: xin_zhang23#126.com
 github: zhangxin23
 

@@ -2,10 +2,13 @@
 layout: default
 title: "关于：About"
 ---
-####Basic Info
+###Basic Info
 My name is Zhang Xin, A software developer.  
 
-####Links
+###Links
 Resume: <>  
 GitHub: <>  
-LinkedIn: <>  
+LinkedIn: <> 
+
+###Contacts
+Email: xin_zhang23@126.com
