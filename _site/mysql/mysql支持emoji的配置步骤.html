@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="mysql对emoji的支持 - ZhangXin's Blog - (xin_zhang23#126.com)">
+    <title>
+      mysql对emoji的支持 - ZhangXin's Blog
+    </title>
+    <!-- Bootstrap Core CSS -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="/css/blog.css" rel="stylesheet">
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media
+    queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file://
+    -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js">
+      </script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js">
+      </script>
+    <![endif]-->
+        <!-- jQuery Version 1.11.0 -->
+    <script src="/js/jquery-1.11.0.js"> </script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="/js/bootstrap.min.js"></script>
+  </head>
+  
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+            <span class="sr-only">
+              Toggle navigation
+            </span>
+            <span class="icon-bar">
+            </span>
+            <span class="icon-bar">
+            </span>
+            <span class="icon-bar">
+            </span>
+          </button>
+          <a class="navbar-brand" href="/index.html">
+            ZhangXin's Blog
+          </a>
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+            <li>
+              <a href="/categories.html">
+                分 类
+              </a>
+            </li>
+            <li>
+              <a href="/tags.html">
+                标 签
+              </a>
+            </li>
+            <li>
+              <a href="/archives.html">
+                归 档
+              </a>
+            </li>
+            <li>
+              <a href="/faqs.html">
+                备 忘
+              </a>
+            </li>
+            <li>
+              <a href="/about.html">
+                关 于
+              </a>
+            </li>
+          </ul> 
+        </div>
+        <!-- /.navbar-collapse -->
+      </div>
+      <!-- /.container -->
+    </nav>
+    <!-- Page Content -->
+    <div class="container">
+      <div class="row">
+        <!-- Blog Entries Column -->
+        <div class="col-md-8">
+          <!-- Blog Post -->
+<!-- Title -->
+<h2>
+  mysql对emoji的支持
+  <div class="post-date"><a href="https://github.com/zhangxin23/zhangxin23.github.com/edit/master/_posts/2015-06-17-mysql支持emoji的配置步骤.markdown" target="_blank">纠错</a>&nbsp;&nbsp;
+	<span class="glyphicon glyphicon-time"></span>
+	17 Jun 2015
+  </div>
+</h2>
+<!-- Author -->
+<hr>
+<h3>步骤：</h3>
+
+<ol>
+<li><p>升级mysql数据库到5.5.3+</p></li>
+<li><p>修改database、table和column字符集</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">alter database DATABASE_NAME character set = utf8mb4 collate = utf8mb4_unicode_ci;
+alter table TABLE_NAME convert to character set utf8mb4 collate utf8mb4_unicode_ci;
+alter table TABLE_NAME change COLUMN_NAME varcher(1024) character set utf8mb4 collate utf8mb4_unicode_ci;
+</code></pre></div></li>
+<li><p>修改mysql的配置文件my.cnf</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">[client]
+default-character-set = utf8mb4
+
+[mysql]
+default-character-set = utf8mb4
+
+[mysqld]
+character-set-client-handshake = FALSE
+character-set-server = utf8mb4
+collation-server = utf8mb4_unicode_ci
+init_connect=&#39;SET NAMES utf8mb4&#39;
+</code></pre></div></li>
+<li><p>重新启动mysql数据库</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">service mysql restart；
+</code></pre></div></li>
+<li><p>检查mysql数据库字符集</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">show variables where variable_name like &#39;character_set_%&#39; or variable_name like &#39;collation%&#39;;
+</code></pre></div>
+<p>检查是否有如下输出：</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">| Variable_name                 | Value                             |
+|-----------------------------------------|-----------------------------------------|
+| character_set_client          | utf8mb4                           |
+| character_set_connection  | utf8mb4                           |
+| character_set_database    | utf8mb4                           |
+| character_set_filesystem  | binary                            |
+| character_set_results     | utf8mb4                           |
+| character_set_server      | utf8mb4                           |
+| character_set_system      | utf8                              |
+| character_sets_dir            | /usr/share/mysql/charsets/    |
+| collation_connection      | utf8mb4_unicode_ci            |
+| collation_database        | utf8mb4_unicode_ci            |
+| collation_server              | utf8mb4_unicode_ci            |
+</code></pre></div></li>
+<li><p>确认mysql-connector-java的版本，网上说只要大于5.1.13就可以，经过测试5.1.26不可以，但是最新版5.1.35（Mar 17, 2015版本）可以，其它版本未测试</p></li>
+<li><p>检查服务器端的mysql数据库连接字符串，一定要包含charactorEncoding=utf8、useUnicode=true、autoReconnect=true等字段</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">注：JDBC Connection String的具体配置可参见：http://dev.mysql.com/doc/connector-j/en/connector-j-reference-configuration-properties.html
+</code></pre></div></li>
+</ol>
+
+<br/>
+<div style="margin-top:10px;margin-bottom:10px">
+   
+  
+</div>
+<hr>
+        </div>
+        <!-- Blog Sidebar Widgets Column -->
+        <div class="col-md-4">
+          <!-- Blog Search Well -->
+          <div class="well">
+            <h4>
+              站内搜索
+            </h4>
+                        <form action="https://google3.azurewebsites.net/search" method="get">
+              <div class="input-group">
+                <input type="text" name="q" class="form-control">
+				<input type="hidden" name="ie" value="UTF-8" />
+				<input type="hidden" name="sitesearch" value="" />
+                <span class="input-group-btn">
+                  <button class="btn btn-default" type="submit">
+                    <span class="glyphicon glyphicon-search">
+                    </span>
+                  </button>
+                </span>
+              </div>
+            </form> 
+            <!-- /.input-group -->
+          </div>
+          <!-- Blog Categories Well -->
+          <div class="well">
+            <h4>
+              分 类
+            </h4>
+            <div class="row">
+                            <div class="col-lg-6">
+                <ul class="list-unstyled">
+                  <li>
+                    <a href="/categories.html#reading">
+                      阅读摘要
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/categories.html#linux">
+                      Linux
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/categories.html#embedded">
+                      嵌入式
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/categories.html#backend">
+                      后台开发
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/categories.html#mysql">
+                      MySQL
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <!-- /.col-lg-6 -->
+              <div class="col-lg-6">
+                <ul class="list-unstyled">
+                  <li>
+                    <a href="/categories.html#java">
+                      Java开发
+                    </a>
+                  </li>                  
+		  <li>
+                    <a href="/categories.html#C/C++">
+                      C/C++开发
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/categories.html#web">
+                      Web开发
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/categories.html#network">
+                      网络相关
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <!-- /.col-lg-6 -->
+ 
+            </div>
+            <!-- /.row -->
+          </div>
+          <!-- Blog Links Well -->
+          <div class="well">
+            <h4>
+              相关链接
+            </h4>
+                        <ul class="list-unstyled">
+              <li>
+                <a href="https://github.com/">
+                  GitHub
+                </a>
+              </li>
+               <li>
+                <a href="https://news.ycombinator.com/">
+                  Hacker News
+                </a>
+              </li>        
+              <li>
+                <a href="http://www.stackoverflow.com/">
+                  Stack Overflow
+                </a>
+              </li>				  
+            </ul>
+ 
+          </div>
+        </div>
+      </div>
+      <!-- /.row -->
+      <hr>
+      <!-- Footer -->
+      <footer>
+        <div class="row">
+          <div class="col-lg-12">
+                        <p align="center">
+				Copyright &copy; , hosted on <a href="https://github.com">GitHub</a>, powered by Jekyll. 
+            </p>
+ 
+          </div>
+          <!-- /.col-lg-12 -->
+        </div>
+      </footer>
+    </div>
+    <!-- /.container -->
+  </body>
+
+</html>

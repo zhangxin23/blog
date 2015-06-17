@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+ 
+ <title>ZhangXin's Blog</title>
+ <link href="http:///atom.xml" rel="self"/>
+ <link href="http://"/>
+ <updated>2015-06-17T13:00:16+08:00</updated>
+ <author>
+   <name></name>
+   <email>xin_zhang23#126.com</email>
+ </author>
+
+ 
+ <entry>
+   <title>mysql对emoji的支持</title>
+   <link href="http:///mysql/mysql%E6%94%AF%E6%8C%81emoji%E7%9A%84%E9%85%8D%E7%BD%AE%E6%AD%A5%E9%AA%A4.html"/>
+   <updated>2015-06-17T00:00:00+08:00</updated>
+   <id>/mysql/mysql支持emoji的配置步骤</id>
+   <content type="html">&lt;h3&gt;步骤：&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;升级mysql数据库到5.5.3+&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;修改database、table和column字符集&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;alter database DATABASE_NAME character set = utf8mb4 collate = utf8mb4_unicode_ci;
+alter table TABLE_NAME convert to character set utf8mb4 collate utf8mb4_unicode_ci;
+alter table TABLE_NAME change COLUMN_NAME varcher(1024) character set utf8mb4 collate utf8mb4_unicode_ci;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;修改mysql的配置文件my.cnf&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;[client]
+default-character-set = utf8mb4
+
+[mysql]
+default-character-set = utf8mb4
+
+[mysqld]
+character-set-client-handshake = FALSE
+character-set-server = utf8mb4
+collation-server = utf8mb4_unicode_ci
+init_connect=&amp;#39;SET NAMES utf8mb4&amp;#39;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;重新启动mysql数据库&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;service mysql restart；
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;检查mysql数据库字符集&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;show variables where variable_name like &amp;#39;character_set_%&amp;#39; or variable_name like &amp;#39;collation%&amp;#39;;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;检查是否有如下输出：&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;| Variable_name                 | Value                             |
+|-----------------------------------------|-----------------------------------------|
+| character_set_client          | utf8mb4                           |
+| character_set_connection  | utf8mb4                           |
+| character_set_database    | utf8mb4                           |
+| character_set_filesystem  | binary                            |
+| character_set_results     | utf8mb4                           |
+| character_set_server      | utf8mb4                           |
+| character_set_system      | utf8                              |
+| character_sets_dir            | /usr/share/mysql/charsets/    |
+| collation_connection      | utf8mb4_unicode_ci            |
+| collation_database        | utf8mb4_unicode_ci            |
+| collation_server              | utf8mb4_unicode_ci            |
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;确认mysql-connector-java的版本，网上说只要大于5.1.13就可以，经过测试5.1.26不可以，但是最新版5.1.35（Mar 17, 2015版本）可以，其它版本未测试&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;检查服务器端的mysql数据库连接字符串，一定要包含charactorEncoding=utf8、useUnicode=true、autoReconnect=true等字段&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;注：JDBC Connection String的具体配置可参见：http://dev.mysql.com/doc/connector-j/en/connector-j-reference-configuration-properties.html
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;/ol&gt;
+</content>
+ </entry>
+ 
+ 
+</feed>
