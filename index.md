@@ -1,6 +1,6 @@
 ---
 layout: page
-title: 深海发光的珊瑚
+title: 张鑫的博客
 tagline: 
 ---
 {% include zhangxin/setup %}
