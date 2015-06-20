@@ -1,8 +1,0 @@
-{% if site.safe and site.zhangxin.sharing.provider and page.zhangxin.sharing != false %}
-
-{% case site.zhangxin.sharing.provider %}
-{% when "custom" %}
-  {% include custom/sharing %}
-{% endcase %}
-
-{% endif %}
