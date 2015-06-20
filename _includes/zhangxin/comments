@@ -1,0 +1,18 @@
+{% if site.zhangxin.comments.provider and page.comments != false %}
+
+{% case site.zhangxin.comments.provider %}
+{% when "duoshuo" %}
+  {% include zhangxin/comments-providers/duoshuo %}
+{% when "disqus" %}
+  {% include zhangxin/comments-providers/disqus %}
+{% when "livefyre" %}
+  {% include zhangxin/comments-providers/livefyre %}
+{% when "intensedebate" %}
+  {% include zhangxin/comments-providers/intensedebate %}
+{% when "facebook" %}
+  {% include zhangxin/comments-providers/facebook %}
+{% when "custom" %}
+  {% include custom/comments %}
+{% endcase %}
+
+{% endif %}
