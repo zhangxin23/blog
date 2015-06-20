@@ -9,7 +9,7 @@ tagline:
 &nbsp; Java C C++ Linux MySQL Web...
 </p>
 <hr/>
-{% for post in site.posts limit:2 %}
+{% for post in site.posts %}
 <div class="post">
   <div class="top">
      <time datetime="{{ post.date | xmlschema }}">{{ post.date | date: "%d %b" }}</time>
