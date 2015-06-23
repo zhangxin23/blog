@@ -1,8 +1,8 @@
 ---
 layout: post
-category: "mysql"
+category: MySQL
 title: "mysql对emoji的支持"
-tags: ["linux","mysql","emoji"]
+tags: [Linux, MySQL, emoji]
 ---
 
 ###步骤：
