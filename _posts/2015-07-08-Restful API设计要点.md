@@ -3,7 +3,7 @@ layout: post
 title: "Restful API设计要点"
 description: "Restful API设计要点"
 category: Web
-tags: [web, restful,]
+tags: [web, restful]
 ---
 
 1 Restful API时面向资源，不能面向动作；
