@@ -12,7 +12,9 @@ tags: [Linux, MySQL, emoji]
 
 		alter database DATABASE_NAME character set = utf8mb4 collate = utf8mb4_unicode_ci;
 		alter table TABLE_NAME convert to character set utf8mb4 collate utf8mb4_unicode_ci;
-		alter table TABLE_NAME change COLUMN_NAME varcher(1024) character set utf8mb4 collate utf8mb4_unicode_ci;
+		
+		#修改表中类型为varchar、char等类型的列，长度或字符个数视情况而定。
+		alter table TABLE_NAME change OLD_COLUMN_NAME NEW_COLUMN_NAME varchar(字符个数) character set utf8mb4 collate utf8mb4_unicode_ci;
 
 3. 修改mysql的配置文件my.cnf
 	
