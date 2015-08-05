@@ -25,7 +25,7 @@ Spring Web MVC是基于MVC的架构，提供了丰富的注解和组件。经过
 
 ###Model View Controller Pattern
 
-![Model View Controller交互图](/images/MVC interactive.png)
+![Model View Controller交互图](/images/MVC interaction.png)
 
 ###Spring Web MVC Architecture
 
