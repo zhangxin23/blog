@@ -6,106 +6,68 @@ category: Web
 tags: [web, Spring, REST]
 ---
 
-Spring Boot hosts an Initializr application at http://start.spring.io. The Initializr provides a Web
-interface that allows you to enter project information, pick the capabilities needed for your project, and
-voilà—it generates the project as a zip file.
+##Spring Boot基本描述
+可以利用http://start.spring.io网站的进行Spring Boot的初始化构建。这个初始化构建器允许你输入工程基本信息、挑选工程支持的功能，最后会生成一个zip压缩包供你下载。利用http://start.spring.io网站生成的工程模板中，在pom.xml文件中的parent tag表明此工程继承自spring-boot-starter-parent POM，这样能够保证工程继承Spring Boot的默认依赖以及版本。此POM文件中有两个依赖：spring-boot-starter-web和spring-boot-starter-test。Spring使用starter POM描述这样的POM文件。这些starter POM可引入其它的依赖。例如，spring-boot-starter-web可引入Spring MVC依赖、嵌入式Tomcat容器依赖、Jackson处理依赖。这些starter模块在提供必要依赖和简化应用的POM文件方面起到了重要作用。
 
-The groupId, artifactId, and version elements in the pom.xml file correspond to Maven’s standard
-GAV coordinates describing our project. The parent tag indicates that we will be inheriting from the spring-
-boot-starter-parent POM. This ensures that our project inherits Spring Boot’s default dependencies
-and versions. The dependencies element lists two POM file dependencies: spring-boot-starter-web and
-spring-boot-starter-test. Spring Boot uses the term starter POMs to describe such POM files.
-These starter POMs are used to pull other dependencies and don’t actually contain any code of their
-own. For example, the spring-boot-starter-web pulls Spring MVC dependencies, Tomcat-embedded
-container dependencies, and a Jackson dependency for JSON processing. These starter modules play an
-important role in providing needed dependencies and simplifying the application’s POM file to just a few
-lines.
+##Spring starter模块
 
-Spring Boot Starter Modules:
-spring-boot-starter Starter that brings in core dependencies necessary for functions such
-as auto-configuration support and logging
-spring-boot- starter-aop Starter that brings in support for aspect-oriented programming and
-AspectJ
-spring-boot-starter-test Starter that brings in dependencies such as JUnit, Mockito, and
-spring-test necessary for testing
-spring-boot-starter-web Starter that brings in MVC dependencies (spring-webmvc) and
-embedded servlet container support
-spring-boot-starter-data-jpa Starter that adds Java Persistence API support by bringing in spring-
-data-jpa, spring-orm and Hibernate dependencies
-spring-boot-starter-data-rest Starter that brings in spring-data-rest-webmvc to expose
-repositories as REST API
-spring-boot-starter-hateoas Starter that brings in spring-hateoas dependencies for HATEOAS
-REST services
-spring-boot-starter-jdbc Starter for supporting JDBC databases
+spring-boot-starter：引入核心依赖，比如auto-configuration支持和日志。
+spring-boot-starter-aop：引入AOP和Aspectj
+spring-boot-starter-test：引入JUnit、Mockito、spring-test等测试依赖
+spring-boot-starter-web：引入MVC依赖和嵌入式servlet容器。
+spring-boot-starter-jpa：通过引入spring-data-jpa、spring-orm和Hibernate依赖，提供Java Persistence API支持。
+spring-boot-starter-data-rest：通过引入spring-data-rest-webmvc以REST API形式公布资源仓库。
+spring-boot-starter-hateoas：通过引入spring-hateoas依赖支持HATEOAS REST服务。
+spring-boot-starter-jdbc：支持JDBC。
+spring-boot-maven-plugin：支持将应用程序打包成JAR/WAR可执行格式，并且运行。
 
-Finally, the spring-boot-maven-plugin contains goals for packaging the application as an executable
-JAR/WAR and running it.
+##@SpringBootApplication作用
+@SpringBootApplication注解是一个简写注解，等同于如下三个注解：
 
-The @SpringBootApplication annotation is a convenient annotation and is equivalent to declaring the
-following three annotations:
-•	 @Configuration—Marks the annotated class as containing one or more Spring bean
-declarations. Spring processes these classes to create bean definitions and instances.
-•	 @ComponentScan—This class tells Spring to scan and look for classes annotated with
-@Configuration, @Service, @Repository, and so on. By default, Spring scans all the
-classes in the package where the @ComponentScan annotated class resides.
-•	 @EnableAutoConfiguration—Enables Spring Boot’s auto-configuration behavior.
-Based on the dependencies and configuration found in the classpath, Spring Boot
-intelligently guesses and creates bean configurations.
+	@Configuration：标注一个类包含一个或者多个spring bean声明。Spring框架会处理这些类，并自动创建bean实例。
+	@ComponentScan：此注解告诉Spring扫描，寻找被@Configuration、@Service、@Repository等注解标注的类。默认情况下，Spring会扫描被@ComponentScan标注的类所在包中的所有类。
+	@EnableAutoConfiguration：开启auto-configuration功能，Spring Boot会根据类路径发现的依赖和配置关系，猜测、生成bean配置。
 
-The main() method simply delegates the application bootstrapping to SpringApplication’s run()
-method. run() takes a HelloWorldRestApplication.class as its argument and instructs Spring to read
-annotation metadata from HelloWorldRestApplication and populate ApplicationContext from it.
+main方法中的run方法会指引Spring从工程中读取注解元信息，并以此为基础生成ApplicationContext。
+
+##spring boot运行方式
 
 mvn spring-boot:run
 
-Spring Boot provides a command line interface (CLI) for generating projects, prototyping, and running
-Groovy scripts. Before we can start using the CLI, we need to install it.
+##CLI
 
-C:\test>spring init --dependencies web rest-cli
-Using service at https://start.spring.io
-Project extracted to 'C:\test\rest-cli'
+Spring Boot提供了CLI（command line interface）生成工程模板，但是需要安装CLI。
 
+##REST工具
 
 Postman
 
 RESTClient
 
----------------------------------------------------------------------------------------------
+##为资源分配URI的最佳实践
 
-The first convention is to use a base URI for our REST service
+	1. 为REST服务选用一个base URI
+	2. 用复数形式命名资源
+	3. 用URI层次表明资源的相互关系
+	4. 当遇到没有资源实体可以表示某个实体（比如统计投票结果）时，可使用查询参数。
 
-The second convention is to name resource endpoints using plural nouns
 
-The third convention advises using a URI hierarchy to represent resources that are related to each other.
+##@ResponseEntity
 
-the fourth convention recommends using a query parameter(Because we don’t
-have any domain objects that can directly help generate this resource representation,).
+@RestController同@Controll和ResponseBody两个注解功能一样。@ResponseEntity可以控制HTTP响应，包括response body和response heasers。
 
--------------------------------------------------------------------------------------------------------------------------------
+##@RequestBody
 
-The @RestController is
-a convenient yet meaningful annotation and has the same effect as adding both @Controller and
-@ResponseBody annotations.
+@RequestBody注解告诉Spring根据Content-Type将request body转换为需要类型的对象。
 
-ResponseEntity gives
-you full control over the HTTP response, including the response body and response headers.
+##URI生成器
 
-The @RequestBody annotation tells Spring that the entire request body needs to be
-converted to an instance of Poll.Spring uses the incoming Content-Type header to identify a proper message
-converter and delegates the actual conversion to it.Spring Boot comes with message converters that support
-JSON and XML resource representations.
+可通过如下方式生成URI：
 
-Spring makes the URI generation process easy
-via its ServletUriComponentsBuilder utility class:
-URI newPollUri = ServletUriComponentsBuilder
-.fromCurrentRequest()
-.path("/{id}")
-.buildAndExpand(poll.getId())
-.toUri();
+	URI newPollUri = ServletUriComponentsBuilder
+	.fromCurrentRequest()
+	.path("/{id}")
+	.buildAndExpand(poll.getId())
+	.toUri();
 
-The fromCurrentRequest method prepares the builder by copying information such as host,
-schema, port, and so on from the HttpServletRequest. The path method appends the passed-in path
-parameter to the existing path in the builder. In the case of the createPoll method, this would result in
-http://localhost:8080/polls/{id}. The buildAndExpand method would build an UriComponents instance
-and replaces any path variables ({id} in our case) with passed-in value. Finally, we invoke the toUri method
-on the UriComponents class to generate the final URI.
+fromCurrentRequest方法通过从HttpServletRequest复制host、schema、port等信息形成builder。buildAndExpand方法能构建UriComponent实例，并替换URI路径中的占位符。最后调用toUri方法最终形成URI。
