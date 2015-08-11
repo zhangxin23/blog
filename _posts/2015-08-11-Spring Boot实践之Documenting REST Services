@@ -1,0 +1,189 @@
+Swagger
+Swagger (http://swagger.io) is a specification and a framework for creating interactive REST API
+documentation. It enables documentation to be in sync with any changes made to REST services. It also
+provides a set of tools and SDK generators for generating API client code.
+
+The specification is
+made up of two file types—a resource listing file and a set of API declaration files that describe the REST API
+and the available operations.
+
+The resource listing file referred to by the name “api-docs” is the root document for describing the API.
+It contains general information about the API such as the API version, title, description, and license. As the
+name suggests, the resource listing file also contains all of the API resources available in the application.
+
+Notice that Swagger uses JSON as
+its description language.
+
+An API declaration file describes a resource along with the API operations and request/response
+representations.
+The basePath field provides the root URI serving the API. The resourcePath
+specifies the resource path relative to the basePath.
+The apis field contains API objects that describe an API
+operation.
+
+The models field contains any
+model objects associated with the resource.
+
+
+Integrating Swagger
+<dependency>
+<groupId>com.mangofactory</groupId>
+<artifactId>swagger-springmvc</artifactId>
+<version>1.0.2</version>
+</dependency>
+The next step is to enable swagger-springmvc. This is done by adding the @EnableSwagger annotation
+
+Swagger UI
+The resource listing and API declaration files act as a valuable resource for understanding a REST API.
+Swagger UI is a subproject of Swagger that takes these files and automatically generates pleasant, intuitive
+interface for interacting with API. Using this interface, both technical and nontechnical folks can test REST
+services by submitting requests and see how those services respond. The Swagger UI is built using HTML,
+CSS, and JavaScript, and doesn’t have any other external dependencies. It can be hosted in any server
+environment or can even run from your local machine.
+To integrate Swagger UI in our QuickPoll application, we download the stable version of Swagger
+UI from the project’s GitHub site at: https://github.com/swagger-api/swagger-ui. In this book we
+are using version 2.0.24, available at https://github.com/swagger-api/swagger-ui/tree/v2.0.24.
+Move the contents of the dist folder that is in the
+cloned/downloaded code to a newly created swagger-ui folder under the quick-poll project’s src\main\
+resources\static folder.
+Modified index.html file
+$(function () {
+window.swaggerUi = new SwaggerUi({
+url: "http://localhost:8080/api-docs",
+dom_id: "swagger-ui-container",
+// code removed for brevity
+}
+With these modifications, we are ready to launch Swagger UI. Run the quick-poll application and
+navigate to the URL http://localhost:8080/swagger-ui/index.html.
+
+Customizing Swagger
+In the previous sections, you have seen that with minimal configuration we were able to create interactive
+documentation using Swagger. Additionally, this documentation would automatically update itself when we
+make changes to our services. However, you will notice that out of the box, the title, and the API descriptions
+are not very intuitive. Also, the URLs such as “Terms of Service,” “Contact the Developer,” and so on don’t
+work. As you explore the UI, the Response classes such as Poll and Vote are not visible in the Swagger UI and
+the user has to end up guessing what the return type for the operations are going to be.
+Swagger Springmvc provides a convenient builder named SwaggerSpringMvcPlugin for customizing
+and configuring Swagger. The SwaggerSpringMvcPlugin provides convenient methods and sensible
+defaults, but itself uses the SpringSwaggerConfig class to perform the actual configuration. We begin our
+Swagger customization by creating a SwaggerConfig class under the com.apress package in our QuickPoll
+application.
+import javax.inject.Inject;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import com.mangofactory.swagger.configuration.SpringSwaggerConfig;
+import com.mangofactory.swagger.models.dto.ApiInfo;
+import com.mangofactory.swagger.models.dto.builder.ApiInfoBuilder;
+import com.mangofactory.swagger.plugin.EnableSwagger;
+import com.mangofactory.swagger.plugin.SwaggerSpringMvcPlugin;
+ 
+@Configuration
+@EnableSwagger
+public class SwaggerConfig {
+ 
+@Inject
+private SpringSwaggerConfig springSwaggerConfig;
+ 
+@Bean
+public SwaggerSpringMvcPlugin configureSwagger() {
+SwaggerSpringMvcPlugin swaggerSpringMvcPlugin = new
+SwaggerSpringMvcPlugin(this.springSwaggerConfig);
+ 
+ApiInfo apiInfo = new ApiInfoBuilder()
+.title("QuickPoll REST API")
+.description("QuickPoll Api for creating and managing
+polls")
+.termsOfServiceUrl("http://example.com/terms-of-service")
+.contact("info@example.com")
+.license("MIT License")
+.licenseUrl("http://opensource.org/licenses/MIT")
+.build();
+ 
+swaggerSpringMvcPlugin.apiInfo(apiInfo)
+.apiVersion("1.0");
+ 
+return swaggerSpringMvcPlugin;
+}
+}
+
+Because this endpoint really doesn’t serve any purpose, let’s hide it from our API
+documentation. To accomplish this, we will use the SwaggerSpringMvcPlugin class’s handy includePattern
+method. The includePattern method allows us to specify which request mappings should be included
+in the resource listing.
+swaggerSpringMvcPlugin
+.apiInfo(apiInfo)
+.apiVersion("1.0")
+.includePatterns("/polls/*.*", "/votes/*.*", "/computeresult/*.*");
+
+Configuring Controllers
+Swagger Core provides a set of annotations that makes it easy to customize controller documentation.
+We begin by annotating the PollContoller with the @Api annotation
+
+
+The @
+Api annotation marks a class as a Swagger resource. Swagger scans classes annotated with @Api to read
+metadata required for generating resource listing and API declaration files.
+Using the
+@Api annotation, we have also provided the description associated with our Poll API
+
+@RestController
+@Api(value = "polls", description = "Poll API")
+public class PollController {
+// Implementation removed for brevity
+}
+
+Now we will move on to the API operation customization using the @ApiOperation annotation. This
+annotation allows us to customize the operation information such as name, description, and response.
+The @ApiOperation we used earlier allows us to specify an operation’s default return type.
+
+@RequestMapping(value="/polls", method=RequestMethod.POST)
+@ApiOperation(value = "Creates a new Poll", notes="The newly created poll Id will be sent in
+the location response header", response = Void.class)
+public ResponseEntity<Void> createPoll(@Valid @RequestBody Poll poll) {
+.......
+}
+
+@ApiResponse annotation to configure the codes and associated response body
+RequestMapping(value="/polls", method=RequestMethod.POST)
+@ApiOperation(value = "Creates a new Poll", notes="The newly created poll Id will be
+sent in the location response header", response = Void.class)
+@ApiResponses(value = {@ApiResponse(code=201, message="Poll Created Successfully",
+response=Void.class),
+@ApiResponse(code=500, message="Error creating Poll",
+response=ErrorDetail.class) } )
+public ResponseEntity<Void> createPoll(@Valid @RequestBody Poll poll) {
+// Content removed for brevity
+}
+
+This is
+because Swagger out of the box adds a set of default response messages for each HTTP method. This
+behavior can be disabled using the useDefaultResponseMessages method
+public class SwaggerConfig {
+@Inject
+private SpringSwaggerConfig springSwaggerConfig;
+ 
+@Bean
+public SwaggerSpringMvcPlugin configureSwagger() {
+// Content removed
+ 
+swaggerSpringMvcPlugin.useDefaultResponseMessages(false);
+return swaggerSpringMvcPlugin;
+}
+}
+
+Configuring UI
+Because we are bundling the Swagger UI HTML/CSS/JS assets with the application, any needed look and
+feel changes can be performed by directly editing those files. In this section, we will change the name in the
+header from Swagger to QuickPoll. We will also change the URL to which the header text points and remove
+the “Toolbox” and “Settings” icon next to the text. To do this, open the index.html file under src\main\
+resources\static\swagger-ui and replace the swagger-ui-wrap div contents with the contents seen in
+Listing 6-12.
+Listing 6-12.  Modified swagger-ui-wrap contents
+<a id="logo" href="http://localhost:8080">QuickPoll</a>
+<form id='api_selector'>
+<div class='input'><input placeholder="http://example.com/api" id="input_baseUrl"
+name="baseUrl" type="text"/></div>
+<div class='input'><input placeholder="api_key" id="input_apiKey" name="apiKey"
+type="text"/></div>
+<div class='input'><a id="explore" href="#">Explore</a></div>
+</form>
