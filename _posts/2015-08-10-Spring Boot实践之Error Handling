@@ -1,73 +1,40 @@
-Error Responses
-HTTP status codes play an important role in REST APIs. API developers should strive to return the right
-codes indicating the request status. Additionally, it is good practice to provide helpful, fine-grained details
-regarding the error in the response body. These details will enable API consumers to troubleshoot issues
-easily and help them to recover. As you can see in Figure 5-3, Spring Boot follows this practice and includes
-the following details in error response bodies:
+---
+layout: post
+title: "Spring REST实践之Error Handling"
+description: "Spring REST实践之Error Handling"
+category: Web
+tags: [web, Spring, REST]
+---
 
-•	 timestamp—The time in milliseconds when the error happened
-•	 status—HTTP status code associated with the error; this is partly redundant as it is
-same as the response status code
-•	 error—The description associated with the status code
-•            exception—The fully qualified path to the exception class resulting in this error
-•	 message—The message providing more details about the error
-•	 path—The URI that resulted in the exception
+##Error Responses
 
-Input Field Validation
-As a famous proverb goes, “Garbage in Garbage Out”; input field validation should be another area of
-emphasis in every application.
-Spring MVC provides two options for validating user input. In the first option, we create a validator
-that implements the org.springframework.validation.Validator interface. Then we inject this validator
-into a controller and invoke validator’s validate method manually to perform validation. The second option
-is to use the JSR 303 validation, an API intended to simplify field validation in any layer of the application.
-Considering the simplicity and the declarative nature of the framework, we will be using JSR 303 validation
-framework in this book.
-The JSR 303 and JSR 349 define specifications for the Bean Validation API (version 1.0 and 1.1, respectively).
-They provide a metadata model for JavaBean validation via a set of standardized validation constraints. Using
-this API, you annotate domain object properties with validation constraints such as @NotNull and @Email.
-Implementing frameworks enforce these constraints at runtime. In this book, we will be using Hibernate
-Validator, a popular JSR 303/349 implementation framework.
+在REST API中，HTTP状态码有非常重要的作用。API开发者应该坚持为每一个请求返回一个正确合适的状态码，而且应该在响应body中包含有用的、细粒度的错误信息。这些细节都可以帮助API使用者更快的定位错误。一般在错误响应体中应该包含如下信息（当然可以根据具体情况定义）：
 
-Constraint Description
-NotNull Annotated field must not have null value
-Null Annotated field must be null
-Max Annotated field value must be an integer value lower than or equal to the number specified
-in the annotation
-Min Annotated field value must be an integer value greater than or equal to the number
-specified in the annotation
-Past Annotated field must be a date in the past
-Future Annotated field must be a date in the future
-Size Annotated field must match the min and max boundaries specified in the annotation.
-For a field that is a Collection, the size of the Collection is matched against boundaries.
-For a String field, the length of the string is verified against boundaries
-Pattern Annotated field must match the regular expression specified in the annotation
+	timestamp：错误发生的时间（时间戳）
+	status：错误相对应的http状态码
+	error：http状态码相关的描述
+	exception：引起错误的类的详细路径信息
+	message：错误相关的更加详细的信息
+	path：引起异常的URI
 
-Externalizing Error Messages
-We have made quite a bit of progress with our input validation and provided the client with descriptive error
-messages that can help them troubleshoot and recover from those errors. However, the actual validation
-error message may not be very descriptive and API developers might want to change it. It would be even
-better if they were able to pull this message from an external properties file. The property file approach not
-only simplifies Java code but also makes it easy to swap the messages without making code changes. It also
-sets the stage for future internationalization/localization needs. To achieve this, create a messages.properties
-file under the src\main\resources folder and add the following two messages:
-NotEmpty.poll.question=Question is a required field
-Size.poll.options=Options must be greater than {2} and less than {1}
+##Input Field Validation
 
-As you can see, we are following the convention - <<Constraint_Name>>.model_name.field_Name for
-each key of the message.
+每一个应用程序都应该关注输入域的合法性判断。Spring MVC提供了两种方式验证用户输入，第一种方式是实现org.springframework.validation.Validator接口，将validator注入到controller中，手动调用验证方法执行验证过程；第二种方式是应用JSR 303验证方式（能够在应用程序的任何层执行验证逻辑），JSR 303和JSP 349定义了Bean验证API的规范。利用这些API，用户直接标注相关属性即可，比如@NotNull和@Email标注，相关实现框架会在运行时执行相关限制。Hibernate Validator是JSR 303/349非常流行的实现框架。下面是一些相关验证注解：
 
-The next step is to read the properties from the file and use them during the ValidationError instance
-creation. We do that by injecting an instance of MessageSource into the RestExceptionHandler class.
-Spring’s MessageSource provides an abstraction to easily resolve messages.
+	NotNull：声明某个域不能为null
+	Null：声明某个域必须为null
+	Max：声明某个域必须为整数，而且要小于等于指定的值
+	Min：声明某个域必须为整数，而且要大于等于指定的值
+	Past：声明某个域必须为过去的日期
+	Future：声明某个域必须为未来的日期
+	Size：声明某个域必须在min和max指定的范围内，如果域是集合类型，那么限制集合的元素个数；如果域是String类型，那么限制字符串的长度
+	Pattern：声明某个域必须符合指定的正则表达式
 
-Improving RestExceptionHandler
-By default, Spring MVC handles error scenarios such as not being able to read a malformed request or not
-finding a required request parameter by throwing a set of standard exceptions. However, Spring MVC doesn’t
-write these standard exception details to the response body. To keep things consistent for our QuickPoll clients,
-it is important that Spring MVC standard exceptions are also handled in the same way and that we return the
-same error response format. A straightforward approach is to create a handler method for each exception
-in our RestExceptionHandler. A simpler approach is to have RestExceptionHandler class extend Spring’s
-ResponseEntityExceptionHandler. The ResponseEntityExceptionHandler class contains a set of protected
-methods that handle standard exception and return a ResponseEntity instance containing error details.
-Extending the ResponseEntityExceptionHandler class allows us to override the protected
-method associated with the exception and return an ErrorDetail instance.
+##Externalizing Error Messages
+
+为了适应国际化/本地化要求，最好能够将错误信息存在外部文件中。要实现此目的，可在classpath下定义多个messages相关的属性文件，用MessageSource的实现类ResourceBundleMessageSource（需要配置它的basename属性为多个属性文件的路径和前缀）读取属性中相关信息，可以通过getMessage方法的第三个参数Locale选取不同语言的错误信息。
+
+##Improving RestExceptionHandler
+
+如果要想自定义标准异常的输出，一个简单的方法是扩展Spring的
+ResponseEntityExceptionHandler类（此类中包含了标准异常的处理器），并覆盖相应方法即可。
