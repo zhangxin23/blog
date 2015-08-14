@@ -1,6 +1,6 @@
 ---
 layout: page
-title: 张鑫的博客
+title: 
 tagline: 
 ---
 {% include zhangxin/setup %}
