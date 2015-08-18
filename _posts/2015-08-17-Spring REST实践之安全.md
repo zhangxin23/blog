@@ -98,6 +98,10 @@ XAuth security flow.png
 
 Applications such as Twitter allow third-party applications to access their REST API using an XAuth scheme. However, even with XAuth, a third-party application needs to capture a username and password, leaving the possibility of misuse. Considering the simplicity involved in XAuth, it might be a good candidate when the same organization develops the client as well as the REST API.
 
+###XAuth
+
+随着REST API变得流行起来，使用API的第三方应用的数量也会显著增长。这些应用需要用户名和密码和REST服务交互，这样存在巨大的风险，因为第三方应用有访问用户名和密码的权限。一种简单的解决方案是第三方应用保存用户信息。如果用户更改了他的凭证，他需要更新所有的第三方应用。而且此种方式不允许用户
+
 OAuth 2.0
 The Open Authorization or OAuth is a framework for accessing protected resources on behalf of a user without storing a password. The OAuth protocol was first introduced in 2007 and was superseded by OAuth 2.0, which was introduced in 2010. In this book, we will be reviewing OAuth 2.0.
 OAuth 2.0 defines the following four roles:
