@@ -107,7 +107,7 @@ OAuth(Open Authorization)是一个用户不用保存密码就可以访问受保�
 
 OAuth 2.0需要在SSL上完成信息交互。
 
-![OAuth2 security flow](OAuth2 security flow.png)
+![OAuth2 security flow](/images/OAuth2 security flow.png)
 
 
 ##spring安全相关
