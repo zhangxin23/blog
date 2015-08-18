@@ -1,0 +1,10 @@
+RestTemplate
+
+The RestTemplate takes care of the necessary plumbing needed to communicate with REST services and automatically marshals/unmarshals HTTP request and response bodies. The RestTemplate like Spring’s other popular helper classes such as JdbcTemplate and JmsTemplate, is based on the Template Method design pattern.1
+The RestTemplate and associated utility classes are part of the spring-web.jar file. If you are building a standalone REST client using RestTemplate, you need to add the spring-web dependency.
+
+可参考spring实战来写这部分。
+
+Testing REST Services
+
+可参照网上相关教程
