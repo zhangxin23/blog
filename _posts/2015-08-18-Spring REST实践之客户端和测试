@@ -1,10 +1,163 @@
-RestTemplate
+---
+layout: post
+title: "Spring REST实践之客户端和测试"
+description: "Spring REST实践之客户端和测试"
+category: Web
+tags: [web, Spring, REST]
+---
+
+##RestTemplate
 
 The RestTemplate takes care of the necessary plumbing needed to communicate with REST services and automatically marshals/unmarshals HTTP request and response bodies. The RestTemplate like Spring’s other popular helper classes such as JdbcTemplate and JmsTemplate, is based on the Template Method design pattern.1
 The RestTemplate and associated utility classes are part of the spring-web.jar file. If you are building a standalone REST client using RestTemplate, you need to add the spring-web dependency.
 
 可参考spring实战来写这部分。
 
-Testing REST Services
+RestTemplate免于编写乏味的样板代码，RestTemplate定义了33个与REST资源交互的方法，涵盖了HTTP动作的各种形式，其实这些方法只有11个独立的方法，而每一个方法都由3个重载的变种。
+
+	delete()：在特定的URL上对资源执行HTTP DELETE操作
+	exchange()：在URL上执行特定的HTTP方法，返回包含对象的ResponseEntity，这个对象是从响应体中映射得到的
+	execute()：在URL上执行特定的HTTP方法，返回一个从响应体映射得到的对象
+	getForEntity()：发送一个HTTP GET请求，返回的ResponseEntity包含了响应体所映射成的对象
+	getForObject()：GET资源，返回的请求体将映射为一个对象
+	headForHeaders()：发送HTTP HEAD请求，返回包含特定资源URL的HTTP头
+	optionsForAllow()：发送HTTP OPTIONS请求，返回对特定URL的Allow头信息
+	postForEntity()：POST数据，返回包含一个对象的ResponseEntity，这个对象是从响应体中映射得到
+	postForLocation()：POST数据，返回新资源的URL
+	postForObject()：POST数据，返回的请求体将匹配为一个对象
+	put()：PUT资源到特定的URL
+
+除了TRACE，RestTemplate涵盖了所有的HTTP动作。除此之外，execute()和exchange()提供了较低层次的通用方法来使用任意的HTTP方法。
+
+每个方法都以3种方法进行了重载：
+
+	一个使用java.net.URI作为URL格式，不支持参数化URL
+	一个使用String作为URL格式，并使用Map指明URL参数
+	一个使用String作为URL格式，并使用可变参数列表指明URL参数
+
+###GET资源
+
+有两种执行GET请求的方法：getForObject()和getForEntity()。3个getObject()方法的签名如下：
+
+	<T> T getForObject(URI url, Class<T> responseType) throws RestClientException;
+	<T> T getForObject(String url, Class<T> responseType, Object... uriVariables) throws RestClientException;
+	<T> T getForObject(String url, Class<T> responseType, Map<String, ?> uriVariables) throws RestClientException;
+
+类似地，getForEntity()方法的签名如下：
+
+	<T> ResponseEntity<T> getForObject(URI url, Class<T> responseType) throws RestClientException;
+	<T> ResponseEntity<T> getForObject(String url, Class<T> responseType, Object... uriVariables) throws RestClientException;
+	<T> ResponseEntity<T> getForObject(String url, Class<T> responseType, Map<String, ?> uriVariables) throws RestClientException;
+
+除了返回类型，getForObject()方法就是getForEntity()方法的镜像。实际上，它们的工作方式大同小异。它们都执行根据URL检索资源的GET请求。它们都将资源根据responseType参数匹配为一定的类型。唯一的区别在于getForObject()只返回所请求类型的对象，而getForEntity()方法会返回请求的对象以及响应的额外信息。
+
+	public Spittle[] retrieveSpittlesForSpitter(String username) {
+		return new RestTemplate().getForObject("http://localhost:8080/Spitter/{spitter}/spittles", 
+			Spittle[].class, username);
+	}
+
+	public Spittle[] retrieveSpittlesForSpitter(String username) {
+		ResponseEntity<Spittle[]> reponse = new RestTemplate().getForEntity(
+			"http://localhost:8080/Spitter/{spitter}/spittles",
+			Spittle[].class, username);
+
+		if(reponse.getStatusCode() == HttpStatus.NOT_MODIFIED) {
+			throw new NotModifiedException();
+		}
+
+		return reponse.getBody();
+	}
+
+###PUT资源
+
+	void put(URI url, Object request) throws RestClientException;
+	void put(String url, Object request, Object... uriVairables) throws RestClientException;
+	void put(String url, Object request, Map<String, ?> uriVariables) throws RestClientException;
+
+	public void updateSpittle(Spittle spittle) throws SpitterException {
+		try {
+			String url = "http://localhost:8080/Spitter/spittles/" + spittle.getId();
+			new RestTemplate().put(new URI(url), spittle);
+		} catch(URISyntaxException e) {
+			throw new SpitterUpdateException("Unable to update Spittle", e);
+		}
+	}
+
+	public void updateSpittle(Spittle spittle) throws SpitterException {
+		restTemplate.put("http://localhost:8080/Spitter/spittles/{id}",
+			spittle, spittle.getId());
+	}
+
+	public void updateSpittle(Spittle spittle) throws SpitterException {
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("id", spittle.getId());
+		restTemplate.put("http://localhost:8080/Spitter/spittles/{id}",
+			spittle, params);
+	}
+
+###DELETE资源
+
+	void delete(String url, Object... uriVariables) throws RestClientException;
+	void delete(String url, Map<String, ?> uriVariables) throws RestClientException;
+	void delete(URI url) throws RestClientException;
+
+	public void deleteSpittle(long id) {
+		try {
+			restTemplate.delete(new URI("http://localhost:8080/Spitter/spittles/" + id));
+		} catch(URISyntaxException e) {
+
+		}
+	}
+
+###POST资源数据
+
+POST请求有postForObject()和postForEntity()两种方法，和GET请求的getForObject()和getForEntity()方法类似。getForLocation()是POST请求所特有的。
+
+	<T> T postForObject(URI url, Object request, Class<T> responseType) throws RestClientException;
+	<T> T postForObject(String url, Object request, Class<T> responseType, Object... uriVariables) throws RestClientException;
+	<T> T postForObject(String url, Object request, Class<T> responseType, Map<String, ?> uriVariables) throws RestClientException;
+
+上面三个方法中，第一个参数都是资源要POST到的URL，第二个参数是要发送的对象，而第三个参数是预期返回的Java类型。在URL作为String类型的两个版本中，第四个参数指定了URL变量（要么是可变参数列表，要么是一个Map）。
+
+	<T> T postForObject(URI url, Object request, Class<T> responseType) throws RestClientException;
+	<T> T postForObject(String url, Object request, Class<T> responseType, Object... uriVariables) throws RestClientException;
+	<T> T postForObject(String url, Object request, Class<T> responseType, Map<String, ?> uriVariables) throws RestClientException;
+
+	ResponseEntity<Spitter> response = new RestTemplate().postForEntity("http://localhost:8080/Spitter/spitters",
+		spitter, Spitter.class);
+	Spitter spitter = response.getBody();
+	URI url = response.getHeaders().getLocation();
+
+postForLacation()会在POST请求的请求体中发送一个资源到服务器端，返回的不再是资源对象，而是创建资源的位置。
+
+	URI postForLocation(String url, Object request, Object... uriVariables) throws RestClientException;
+	URI postForLocation(String url, Object request, Map<String, ?> uriVariables) throws RestClientException;
+	URI postForLocation(URI url, Object request) throws RestClientException;
+
+	public String postSpitter(Spitter spitter) {
+		RestTemplate rest = new RestTemplate();
+		return rest.postForLocation("http://localhost:8080/Spitter/spitters",
+			spitter).toString();
+	}
+
+###交换资源
+
+exchange方法可以在发送个服务器端的请求中设置头信息。
+
+	<T> ResponseEntity<T> exchange(URI url, HttpMethod method, HttpEntity<?> requestEntity, Class<T> responseType) throws RestClientException;
+
+	<T> ResponseEntity<T> exchange(String url, HttpMethod method, HttpEntity<?> requestEntity, Class<T> responseType, Object... uriVariables) throws RestClientException;
+
+	<T> ResponseEntity<T> exchange(String url, HttpMethod method, HttpEntity<?> requestEntity, Class<T> responseType, Map<String, ?> uriVariables) throws RestClientException;
+
+
+	MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
+	headers.add("Accept", "application/json");
+	HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+
+	ResponseEntity<Spitter> response = rest.exchange("http://localhost:8080/Spitter/spitters/{spitter}",
+		HttpMethod.GET, requestEntity, Spitter.class, spitterId);
+		
+##Testing REST Services
 
 可参照网上相关教程
