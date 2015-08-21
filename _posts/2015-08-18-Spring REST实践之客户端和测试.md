@@ -3,7 +3,7 @@ layout: post
 title: "Spring REST实践之客户端和测试"
 description: "Spring REST实践之客户端和测试"
 category: Web
-tags: [web, Spring, REST]
+tags: [web, Spring, REST, Test]
 ---
 
 ##RestTemplate
