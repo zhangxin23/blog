@@ -88,104 +88,33 @@ Certificated-based security模型需要证书验证参与者的身份。在SSL/T
 
 Certificate-based security模型消除了发送共享密码的需求，使得它更加安全。但是，布置和维护证书是非常昂贵的，一般只能在大型系统中使用。
 
-XAuth
-As REST APIs became popular, the number of third-party applications that use those APIs also grew significantly. These applications need a username and password in order to interact with REST services and perform actions on behalf of users. This poses a huge security problem as third-party applications now have access to usernames and passwords. A security breach in the third-party application can compromise user information. Also, if the user changes his credentials, he needs to remember to go and update all of these third-party applications. Finally, this mechanism doesn’t allow the user to revoke his authorization to the third-party application. The only option for revoking in this case would be to change his password.
-The XAuth and OAuth schemes provide a mechanism to access protected resources on a user’s behalf without needing to store passwords. In this approach, a client application would request a username
-and password from the user typically by using a login form. The client would then send the username
-and password to the server. The server receives the user’s credentials and validates them. On successful validation, a token is returned to the client. The client discards the username and password information and stores the token locally. When accessing a user’s protected resource, the client would include the token in the request. This is typically accomplished using a custom HTTP header such as X-Auth-Token. The longevity of the token is dependent on the implementing service. The token can remain until the server revokes it or the token can expire in a designated period of time.
-
-XAuth security flow.png
-
-Applications such as Twitter allow third-party applications to access their REST API using an XAuth scheme. However, even with XAuth, a third-party application needs to capture a username and password, leaving the possibility of misuse. Considering the simplicity involved in XAuth, it might be a good candidate when the same organization develops the client as well as the REST API.
-
 ###XAuth
 
-随着REST API变得流行起来，使用API的第三方应用的数量也会显著增长。这些应用需要用户名和密码和REST服务交互，这样存在巨大的风险，因为第三方应用有访问用户名和密码的权限。一种简单的解决方案是第三方应用保存用户信息。如果用户更改了他的凭证，他需要更新所有的第三方应用。而且此种方式不允许用户
+随着REST API变得流行起来，使用API的第三方应用的数量也会显著增长。这些应用需要用户名和密码和REST服务交互，这样存在巨大的风险，因为第三方应用有访问用户名和密码的权限。一种简单的解决方案是第三方应用保存用户信息。如果用户更改了他的凭证，他需要更新所有的第三方应用。而且此种方式不允许用户撤销他对第三方的授权。在这种情况下，只有更改密码才能撤销授权。
 
-OAuth 2.0
-The Open Authorization or OAuth is a framework for accessing protected resources on behalf of a user without storing a password. The OAuth protocol was first introduced in 2007 and was superseded by OAuth 2.0, which was introduced in 2010. In this book, we will be reviewing OAuth 2.0.
-OAuth 2.0 defines the following four roles:
-• Resource Owner—A resource owner is the user that wants to give access to portions of their account or resources. For example, a resource owner could be a Twitter or a Facebook user.
-• Client—A client is an application that wants access to a user’s resources. This could be a third-party app such as Klout (https://klout.com/) that wants to access a user’s Twitter account.
-• Authorization Server—An authorization server verifies the user’s identity and grants the client a token to access the user’s resources.
-• Resource Server—A resource server hosts protected user resources. For example, this would be Twitter API to access tweets and timelines, and so on.
-The interactions between these four roles discussed are depicted in Figure 8-6. OAuth 2.0 requires these interactions to be conducted on SSL.
+XAuth和OAuth提供了用户不用保存密码就能访问受保护资源的方式。在这种方式中，客户端应用可通过login form请求用户名和密码，然后client发送用户名和密码到server，server接收到后，验证client的凭证。如果验证成功，一个token会返回给client。client可以放弃用户名和密码，在本地存储token。当再访问受保护资源时，token会被包含在请求中，可用X-Auth-Token完成此目的。token的有效期由实现决定，token可以一直保存直到server删除它或者token在给定的时间内过期。如果client和REST API都由一个组织开发，那么这种方式可以作为备选方案。
 
-Before a client can participate in the “OAuth dance” shown in Figure 8-6, it must register itself with
-the Authorization Server. For most public APIs such as Facebook and Twitter, this involves filling out an application form and providing information about the client such as application name, base domain, and website. On successful registration, the client will receive a Client ID and a Client secret. The Client ID is used to uniquely identify the Client and is available publicly. These client credentials play an important part in the OAuth interactions, which we will discuss in just a minute.
-The OAuth interaction begins with the user expressing interest in using the “Client,” a third-party application. The client requests authorization to access protected resources on the user’s behalf and redirects the user/resource owner to the Authorization server. An example URI that the client can redirect the user to is shown here:
-https://oauth2.example.com/authorize?client_id=CLIENT_ID&response_type=auth_code&call_
-back=CALL_BACK_URI&scope=read,tweet
-The usage of HTTPS is mandatory for any production OAuth 2.0 interactions and, hence, the URI begins with https. The CLIENT_ID is used to provide the client’s identity to the authorization server. The scope parameter provides a comma separated set of scopes/roles that the client needs.
-On receiving the request, the authorization server would present the user with an authentication challenge typically via a login form. The user provides his username and password. On successful verification of the user credentials, the authorization server redirects the user to the client application using the CALL_BACK_URI parameter. The authorization server also appends an authorization code to the CALL_BACK_URI parameter value. Here is an example URL that an authorization server might generate:
-https://mycoolclient.com/code_callback?auth_code=6F99A74F2D066A267D6D838F88
-The client then uses the authorization code to request an Access Token from the authorization server. To achieve this, a client would typically perform a HTTP POST on a URI like this:
-https://oauth2.example.com/access_token?client_id=CLIENT_ID&client_secret=CLIENT_SECRET&
-auth_code=6F99A74F2D066A267D6D838F88
+![XAuth security flow](/images/XAuth security flow.png)
 
-As you can see, the client provides its credentials as part of the request. The authorization server verifies the client’s identity and authorization code. On successful verification, it returns an access token. Here is an example response in JSON format:
-{"access_token"="f292c6912e7710c8"}
-On receiving the access token, the client will request a protected resource from the resource server passing in the access token it obtained. The resource server validates the access token and serves the protected resource.
+###OAuth 2.0
 
-OAuth Client Profiles
-One of the strengths of OAuth 2.0 is its support for variety of client profiles such as “Web application,” “Native application,” and “User Agent/Browser application.” The authorization code flow discussed
-earlier (often referred to as authorization grant type) is applicable to “Web application” clients that have
-a Web-based user interface and a server side backend. This allows the client to store the authorization code in a secure backend and reuse it for future interactions. Other client profiles have their own flows that determine the interaction between the four OAuth 2.0 players.
-A pure JavaScript-based application or a native application can’t store authorization codes securely. Hence, for such clients, the callback from the authorization server doesn’t include an authorization code. Instead, an implicit grant type approach is taken and an access token is directly handed over to the client, which is then used for requesting protected resources. Applications falling under this client profile will not have a client secret and are simply identified using the client ID.
-OAuth 2.0 also supports an authorization flow, referred to as password grant type, that is similar
-to XAuth discussed in the previous section. In this flow, the user supplies his credentials to the client application directly. He is never redirected to the authorization server. The client passes these credentials to the authorization server and receives an access token for requesting protected resources.
-OAuth 1.0 introduced several implementation complexities especially around the cryptographic requirements for signing requests with client credentials. OAuth 2.0 simplified this by eliminating signatures and requiring HTTPS for all interactions. However, because many of OAuth 2’s features are optional, the specification has resulted in noninteroperable implementations.
+OAuth(Open Authorization)是一个用户不用保存密码就可以访问受保护资源的框架。OAuth在2007年开发出来，于2010年被OAuth2.0取代。OAuth2.0定义了如下四个角色：
+
+	Resource Owner-A：可以给予访问账户或者资源的权限的用户，比如微博的用户。
+	Client A：需要获得访问用户资源权限的客户端应用。
+	Authorizatin Server：验证用户的身份，并发给client一个可以访问资源的token。
+	Resource Server：保存受保护资源的服务器。
+
+OAuth 2.0需要在SSL上完成信息交互。
+
+![OAuth2 security flow](/images/OAuth2 security flow.png)
 
 
-Refresh Tokens versus Access Tokens
-The lifetime of access tokens can be limited and clients should be prepared for the possibility of a token no longer working. To prevent the need for the resource owner to repeatedly authenticate, the OAuth 2.0 specification has provided a notion of refresh tokens. An authorization server can optionally issue a refresh token when it generates an access token. The client stores this refresh token, and when an access token expires, it contacts the authorization server for a fresh set of access token as well as refresh token. Specification allows generation of refresh tokens for authorization and password grant type flows. Considering the lack of security with the “implicit grant type,” refresh tokens are prohibited for such client profiles.
+##spring安全相关
 
-Spring Security Overview
-To implement security in the QuickPoll application we will be using another popular Spring subproject, namely, Spring Security. Before we move forward with the implementation, let’s understand Spring Security and the different components that make up the framework.
+可在POM文件中包含如下依赖：
 
-Spring Security, formerly known as Acegi Security, is a framework for securing Java-based applications. It provides an out-of-the-box integration to a variety of authentication systems such as LDAP, Kerberos, OpenID, OAuth, and so on. With minimal configuration, it can be easily extended to work with any custom authentication and authorization systems. The framework also implements security best practices and has inbuilt features to protect against attacks such as CSRF, or Cross Site Request Forgery, and session fixation, and so on.
-Spring Security provides a consistent security model that can be used to secure Web URLs and Java methods. The high-level steps involved during the Spring Security Authentication/Authorization process along with components involved are listed here:
-1. The process begins with a user requesting a protected resource on a Spring-secured Web application.
-2. The request goes through a series of Spring Security filters referred to
-as a “filter chain” that identify an org.springframework.security. web.AuthenticationEntryPoint to service the request. The AuthenticationEntryPoint will respond to the client with a request to authentication. This is done, for example, by sending a login page to the user.
-3. On receiving authentication information from the user such as a username/ password, a org.springframework.security.core.Authentication object
-is created. The Authentication interface is shown in Listing 8-1 and its implementations plays a dual role in Spring Security. They represent a token for an authentication request or a fully authenticated principal after authentication is successfully completed. The isAuthenticated method can be used to determine the current role played by an Authentication instance. In case of
-a username/password authentication, the getPrincipal method returns the username and the getCredentials returns the password. The getUserDetails method contains additional information such as IP address, and so on.
-Listing 8-1. Authentication API
-public interface Authentication extends Principal, Serializable {
-}
-Object getPrincipal();
-Object getCredentials();
-Object getDetails();
-Collection<? extends GrantedAuthority> getAuthorities();
-boolean isAuthenticated();
-void setAuthenticated(boolean isAuthenticated) throws
-IllegalArgumentException;
-4. As a next step, the authentication request token is presented to an org.springframework.security.authentication.AuthenticationManager. The AuthenticationManger as shown in Listing 8-2, contains an authenticate method that takes an authentication request token and returns a fully populated Authentication instance. Spring provides an out-of-the-box implementation of AuthenticationManger called ProviderManager.
-
-Listing 8-2. AuthenticationManager API
-          public interface AuthenticationManager {
-                  Authentication authenticate(Authentication authentication)
-                  throws AuthenticationException;
-}
-5. In order to perform an authentication, the ProviderManager needs to compare the submitted user information with a backend user store such as LDAP or database. ProviderManager delegates this responsibility to a series of org.springframework.security.authentication.AuthenticationProvider. These AuthenticationProviders use an org.springframework.security.core. userdetails.UserDetailsService to retrieve user information from backend stores. Listing 8-3 shows the UserDetailsService API.
-Listing 8-3. UserDetailsService API
-public interface UserDetailsService {
-                  UserDetails loadUserByUsername(String username)
-                  throws UsernameNotFoundException;
-}
-Implementations of UserDetailsService such as JdbcDaoImpl and LdapUserDetailService will use the passed-in username to retrieve user information. These implementations will also create a set of GrantedAuthority instances that represent roles/authorities the user has in the system.
-6. The AuthenticationProvider compares the submitted credentials with
-the information in the backend system and on successful verification the org.springframework.security.core.userdetails.UserDetails object is used to build a fully populated Authentication instance.
-7. The Authentication instance is then put into an org.springframework. security.core.context.SecurityContextHolder. The SecurityContextHolder as the name suggests simply associates the logged-in user’s context with the current thread of execution so that it is readily available across user requests or operations. In a Web-based application, the logged-in user’s context is typically stored in the user’s HTTP session.
-8. Spring Security then performs an authorization check using an org.springframework.security.access.intercept.AbstractSecurity Interceptor and its implementations org.springframework.security.web. access.intercept.FilterSecurityInterceptor and org.springframework. security.access.intercept.aopalliance.MethodSecurityInterceptor. The FilterSecurityInterceptor is used for URL-based authorization and MethodSecurityInterceptor is used for method invocation authorization.
-9. The AbstractSecurityInterceptor relies on security configuration and a set of org.springframework.security.access.AccessDecisionManagers to decide if the user is authorized or not. On successful authorization, the user is given access to the protected resource.
-
-
-<dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-security</artifactId>
-</dependency>
-
-
-curl -vu user:554cc6c2-67e1-4f1e-8c5b-096609e2d0b1 http://localhost:8080/v3/polls
+	<dependency>
+	        <groupId>org.springframework.boot</groupId>
+	        <artifactId>spring-boot-starter-security</artifactId>
+	</dependency>
