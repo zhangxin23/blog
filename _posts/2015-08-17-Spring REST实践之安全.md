@@ -46,9 +46,6 @@ Basic部分表明使用Basic认证，realm指示服务器上一个保护的空�
 
 因为client包含了认证的信息，所以server是无状态的。但是client指示简单的对用户名和密码进行加密，因此在not-SSL/TLS链接中，此种方式有可能遭受中间人攻击，窃取密码。
 
-Digest Authentication
-The Digest Authentication approach is similar to the Basic authentication model discussed earlier except that the user credentials are sent encrypted. The client submits a request for a protected resource and the server responds with a 401 “Unauthorized” response code and a WWW-Authenticate header. 
-
 ###Digest Authentication
 
 Digest Authentication和HTTP Basic Authentication非常相似，除了用户的证书是加密传送的。client提交一个针对包含资源的请求，然后server回复一个401(Unauthorized)状态码和一个WWW-Authenticate header，如下所示：
