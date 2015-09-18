@@ -60,3 +60,7 @@ tags: [Linux, MySQL, emoji]
 7. 检查服务器端的mysql数据库连接字符串，一定要包含charactorEncoding=utf8、useUnicode=true、autoReconnect=true等字段
 		
 		注：JDBC Connection String的具体配置可参见：http://dev.mysql.com/doc/connector-j/en/connector-j-reference-configuration-properties.html
+
+8. 导出数据库时，需要设置字符集为utf8mb4
+	
+	mysqldump --default-character-set=utf8mb4 用户名 密码 数据库名 > 文件名
