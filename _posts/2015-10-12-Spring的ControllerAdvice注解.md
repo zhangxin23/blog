@@ -3,7 +3,7 @@ layout: post
 title: "Spring的ControllerAdvice注解"
 description: "Spring的ControllerAdvice注解"
 category: Spring
-tags: [Spring]
+tags: [Spring, Java]
 ---
 
 @ControllerAdvice，是spring3.2提供的新注解，其实现如下所示：
