@@ -2,7 +2,10 @@
 SELECT ... FROM TABLE_A
 INTO OUTFILE "/path/to/file"
 FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
-LINES TERMINATED BY '\n'
+LINES TERMINATED BY '\n';
+
+LOAD DATA INFILE "/path/to/file" INTO TABLE table_name;
+注意：如果导出时用到了FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"' LINES TERMINATED BY '\n'语句，那么LODA时也要加上。还要注意编码问题。
 
 
 Recent Ubuntu Server Editions (such as 10.04) ship with AppArmor and MySQL's profile might be in enforcing mode by default. You can check this by executing sudo aa-status like so:
