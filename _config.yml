@@ -15,7 +15,7 @@ pygments: true
 #
 
 title : 码农自留地
-tagline: Java C C++ Linux MySQL Web
+tagline: Web 后台 Java C C++ Linux MySQL Redis MongoDB
 author : 
   name : zhang xin
   email : xin_zhang23@126.com
@@ -30,8 +30,8 @@ author :
 # Else if you are pushing to username.github.io, replace with your username.
 # Finally if you are pushing to a GitHub project page, include the project name at the end.
 #
-production_url : http://zhangxin23.github.io
-production_gitcafe_url : http://zhangxin23.gitcafe.io
+production_url : http://blog.coderland.net
+production_gitcafe_url : http://bg.coderland.net
 
 # All Jekyll-Bootstrap specific configurations are namespaced into this hash
 #

@@ -6,7 +6,7 @@ tagline:
 {% include zhangxin/setup %}
 
 <p>
-&nbsp; Java C C++ Linux MySQL Web...
+&nbsp; Web 后台 Java C C++ Linux MySQL Redis MongoDB ...
 </p>
 <hr/>
 {% for post in site.posts %}
