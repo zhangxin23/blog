@@ -31,10 +31,10 @@ BIT数据类型用于存储bit值，能够存储比特长度范围为1~64。
 
 	mysql> SELECT b+0, BIN(b+0), OCT(b+0), HEX(b+0) FROM t;
 
-	b+0	BIN(b+0)	OCT(b+0)	HEX(b+0)
-	255	11111111	377		FF
-	10	1010		12		A
-	5	101		5		5   
+	b+0: 255 10 5
+	BIN(b+0): 1111111 1010 101
+	OCT(b+0): 377 12 5
+	HEX(b+0): FF A 5   
 
 将bit值赋值给数字或者变量，可使用CAST()函数或者"+0"方式：
 
@@ -42,5 +42,6 @@ BIT数据类型用于存储bit值，能够存储比特长度范围为1~64。
 	mysql> SET @v2 = CAST(0b1000001 AS UNSIGNED), @v3 = 0b1000001+0;
 	mysql> SELECT @v1, @v2, @v3;
 	
-	@v1	@v2	@v3
-	A   65	65
+	@v1: A
+	@v2: 65
+	@v3: 65
