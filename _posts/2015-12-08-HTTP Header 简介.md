@@ -358,3 +358,7 @@ web服务器软件名称
 表明客户端请求实体应该使用的授权方案。
 
 	WWW-Authenticate: Basic
+
+###参考
+
+以上只是每个header field的简介，如果查看详细介绍，请访问[这个网站](http://www.tutorialspoint.com/http/http_header_fields.htm)。
