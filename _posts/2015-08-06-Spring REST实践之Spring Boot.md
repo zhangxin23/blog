@@ -7,19 +7,20 @@ tags: [web, Spring, REST]
 ---
 
 ##Spring Boot基本描述
+
 可以利用http://start.spring.io网站的进行Spring Boot的初始化构建。这个初始化构建器允许你输入工程基本信息、挑选工程支持的功能，最后会生成一个zip压缩包供你下载。利用http://start.spring.io网站生成的工程模板中，在pom.xml文件中的parent tag表明此工程继承自spring-boot-starter-parent POM，这样能够保证工程继承Spring Boot的默认依赖以及版本。此POM文件中有两个依赖：spring-boot-starter-web和spring-boot-starter-test。Spring使用starter POM描述这样的POM文件。这些starter POM可引入其它的依赖。例如，spring-boot-starter-web可引入Spring MVC依赖、嵌入式Tomcat容器依赖、Jackson处理依赖。这些starter模块在提供必要依赖和简化应用的POM文件方面起到了重要作用。
 
 ##Spring starter模块
 
-spring-boot-starter：引入核心依赖，比如auto-configuration支持和日志。
-spring-boot-starter-aop：引入AOP和Aspectj
-spring-boot-starter-test：引入JUnit、Mockito、spring-test等测试依赖
-spring-boot-starter-web：引入MVC依赖和嵌入式servlet容器。
-spring-boot-starter-jpa：通过引入spring-data-jpa、spring-orm和Hibernate依赖，提供Java Persistence API支持。
-spring-boot-starter-data-rest：通过引入spring-data-rest-webmvc以REST API形式公布资源仓库。
-spring-boot-starter-hateoas：通过引入spring-hateoas依赖支持HATEOAS REST服务。
-spring-boot-starter-jdbc：支持JDBC。
-spring-boot-maven-plugin：支持将应用程序打包成JAR/WAR可执行格式，并且运行。
+	spring-boot-starter：引入核心依赖，比如auto-configuration支持和日志。
+	spring-boot-starter-aop：引入AOP和Aspectj
+	spring-boot-starter-test：引入JUnit、Mockito、spring-test等测试依赖
+	spring-boot-starter-web：引入MVC依赖和嵌入式servlet容器。
+	spring-boot-starter-jpa：通过引入spring-data-jpa、spring-orm和Hibernate依赖，提供Java Persistence API支持。
+	spring-boot-starter-data-rest：通过引入spring-data-rest-webmvc以REST API形式公布资源仓库。
+	spring-boot-starter-hateoas：通过引入spring-hateoas依赖支持HATEOAS REST服务。
+	spring-boot-starter-jdbc：支持JDBC。
+	spring-boot-maven-plugin：支持将应用程序打包成JAR/WAR可执行格式，并且运行。
 
 ##@SpringBootApplication作用
 @SpringBootApplication注解是一个简写注解，等同于如下三个注解：
