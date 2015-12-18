@@ -8,7 +8,7 @@ tags: [functional]
 
 Java Development Kit 8 has a number of functional interfaces. Here we review the starter set—the interfaces we frequently encounter and need to first get familiar with. All the interfaces we see here are part of the java.util.function package.
 
-###Consumer\<T\>
+###Consumer&lt;T&gt;
 
 ####Description
 
