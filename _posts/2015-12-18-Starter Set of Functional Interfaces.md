@@ -30,7 +30,7 @@ As a parameter to the forEach() method
 
 IntConsumer, LongConsumer, DoubleConsumer, …
 
-###Supplier<T>
+###Supplier&lt;T&gt;
 
 ####Description
 
@@ -52,7 +52,7 @@ To create lazy infinite Streams and as the parameter to the Optional class’s o
 
 IntSupplier, LongSupplier, DoubleSupplier, …
 
-###Predicate<T>
+###Predicate&lt;T&gt;
 
 ####Description
 
@@ -74,7 +74,7 @@ As a parameter to Stream’s methods, like filter() and anyMatch()
 
 IntPredicate, LongPredicate, DoublePredicate, …
 
-###Function<T, R>
+###Function&lt;T, R&gt;
 
 ####Description
 
