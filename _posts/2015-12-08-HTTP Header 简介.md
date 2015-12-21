@@ -76,6 +76,7 @@ HTTP请求发送时，会把保存在该请求域名下的所有cookie值一起�
 请求的与实体对应的MIME信息
 
 	Content-Type: application/x-www-form-urlencoded
+
 ####Date
 
 请求发送的日期和时间
