@@ -1,9 +1,9 @@
 ---
-layout:post
+layout: post
 title: "spring mvc 详细执行流程"
 description: "spring mvc 详细执行流程"
 category: spring mvc
-tags:[spring mvc]
+tags: [spring mvc]
 ---
 
 ###名词解释 
