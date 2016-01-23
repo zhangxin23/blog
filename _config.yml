@@ -31,7 +31,7 @@ author :
 # Finally if you are pushing to a GitHub project page, include the project name at the end.
 #
 production_url : http://blog.coderland.net
-production_gitcafe_url : http://bg.coderland.net
+production_gitcafe_url : http://zhangxin23.gitcafe.io
 
 # All Jekyll-Bootstrap specific configurations are namespaced into this hash
 #
