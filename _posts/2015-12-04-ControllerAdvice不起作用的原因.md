@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "ControllerAdvicd不起作用的原因"
+title: "ControllerAdvice不起作用的原因"
 description: "ControllerAdvice不起作用的原因"
 category: spring
 tags: [spring]
